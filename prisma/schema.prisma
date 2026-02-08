@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  clerkUserId   String   @unique
+  username      String?  @unique
+  avatarUrl     String?
+
+  reviews       Review[]
+  createdAt     DateTime @default(now())
+}
+
+model PuzzleBox {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  imageUrl    String?
+
+  reviews     Review[]
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  rating      Int
+  comment     String?
+
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+
+  puzzleBox   PuzzleBox @relation(fields: [puzzleBoxId], references: [id])
+  puzzleBoxId String
+
+  createdAt   DateTime  @default(now())
+}
